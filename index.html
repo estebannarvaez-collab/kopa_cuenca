@@ -677,29 +677,31 @@ footer{padding:60px 52px 36px;border-top:1px solid rgba(255,255,255,0.05);displa
 
 <!-- FIREBASE -->
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// ══════════════════════════════════════════════
-// ⚠️  PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE
-// ══════════════════════════════════════════════
-const firebaseConfig = {
-  apiKey: "AIzaSyDf4leOoPo_JOPVEEKxYnTMIcH6dlg-54I",
-  authDomain: "kopa-cuenca.firebaseapp.com",
-  projectId: "kopa-cuenca",
-  storageBucket: "kopa-cuenca.firebasestorage.app",
-  messagingSenderId: "950293917524",
-  appId: "1:950293917524:web:e9ab2934065dd06718e2c1",
-  measurementId: "G-5KLZJW7SEF"
-};
-};
-// ══════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey: "AIzaSyDf4leOoPo_JOPVEEKxYnTMIcH6dlg-54I",
+    authDomain: "kopa-cuenca.firebaseapp.com",
+    projectId: "kopa-cuenca",
+    storageBucket: "kopa-cuenca.firebasestorage.app",
+    messagingSenderId: "950293917524",
+    appId: "1:950293917524:web:e9ab2934065dd06718e2c1",
+    measurementId: "G-5KLZJW7SEF"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-let equiposData = [];
-let grupoActivo = 'todos';
+  // ESTA LÍNEA ES CLAVE: Hace que la base de datos sea visible para tus funciones
+  window.db = db; 
+  window.collection = collection;
+  window.addDoc = addDoc;
+  window.doc = doc;
+  window.updateDoc = updateDoc;
+
+  console.log("Firebase conectado correctamente");
+</script>
 
 // ── EQUIPOS ──
 onSnapshot(collection(db, 'equipos'), snap => {
