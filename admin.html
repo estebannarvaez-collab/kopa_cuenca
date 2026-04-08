@@ -326,7 +326,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ── PUENTE DE FUNCIONES (Súper importante para que tus botones funcionen) ──
+// ── PUENTE GLOBAL (Para que los botones funcionen) ──
 window.db = db;
 window.storage = storage;
 window.sRef = sRef;
@@ -345,19 +345,12 @@ window.orderBy = orderBy;
 
 // ── LÓGICA DE LOGIN ──
 const ADMIN_PASS = "kopa2025admin";
-
 window.doLogin = function() {
   const v = document.getElementById('pass-in').value;
   if (v === ADMIN_PASS) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-app').style.display = 'grid';
-    
-    // Forzamos a que las funciones de abajo se activen
-    if (window.initApp) {
-        window.initApp();
-    } else if (typeof initApp === 'function') {
-        initApp();
-    }
+    window.initApp();
   } else {
     const errDiv = document.getElementById('login-err');
     if (errDiv) errDiv.style.display = 'block';
@@ -369,9 +362,7 @@ window.logout = function() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('admin-app').style.display = 'none';
 };
-</script>
-  
-  
+
 // ── NAVIGATION ──
 window.nav = function(el) {
   document.querySelectorAll('.sb-nav a').forEach(a => a.classList.remove('active'));
@@ -379,7 +370,7 @@ window.nav = function(el) {
   const page = el.dataset.page;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  if (page === 'fixture') cargarSelectEquipos();
+  if (page === 'fixture') window.cargarSelectEquipos();
 };
 
 // ── TOAST ──
@@ -391,17 +382,16 @@ window.toast = function(msg, err) {
 };
 
 // ── INIT ──
-async function initApp() {
-  listenDashboard();
-  listenEquipos();
-  listenResultados();
-  listenTabla();
-}
+window.initApp = async function() {
+  window.listenDashboard();
+  window.listenEquipos();
+  window.listenResultados();
+  window.listenTabla();
+  window.listenFixture();
+};
 
-// ══════════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════════
-function listenDashboard() {
+// ── DASHBOARD ──
+window.listenDashboard = function() {
   onSnapshot(collection(db, 'equipos'), snap => {
     document.getElementById('d-equipos').textContent = snap.size;
   });
@@ -411,8 +401,11 @@ function listenDashboard() {
     document.getElementById('d-partidos').textContent = total;
     document.getElementById('d-jugados').textContent = jugados;
     document.getElementById('d-pendientes').textContent = total - jugados;
+    window.renderRecentResults(snap);
+  });
+};
 
-    // Últimos resultados
+window.renderRecentResults = function(snap) {
     let recents = [];
     snap.forEach(d => { if (d.data().estado === 'jugado') recents.push({id: d.id, ...d.data()}); });
     recents = recents.slice(-5).reverse();
@@ -424,26 +417,22 @@ function listenDashboard() {
         <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--lime)">${p.golesLocal ?? '—'} – ${p.golesVisita ?? '—'}</div>
         <div class="match-team right">${p.visita}</div>
       </div>`).join('');
-  });
-}
+};
 
-// ══════════════════════════════════════════════
-// EQUIPOS
-// ══════════════════════════════════════════════
+// ── EQUIPOS ──
 let equiposCache = [];
-
-function listenEquipos() {
+window.listenEquipos = function() {
   onSnapshot(collection(db, 'equipos'), snap => {
     equiposCache = [];
     snap.forEach(d => equiposCache.push({id: d.id, ...d.data()}));
     equiposCache.sort((a,b) => a.nombre?.localeCompare(b.nombre));
-    renderEquiposTabla();
+    window.renderEquiposTabla();
   });
-}
+};
 
-function renderEquiposTabla() {
+window.renderEquiposTabla = function() {
   const tbody = document.getElementById('equipos-tbody');
-  if (!equiposCache.length) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);font-size:13px;padding:20px;">Sin equipos. Agrega el primero arriba.</td></tr>'; return; }
+  if (!equiposCache.length) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--muted);font-size:13px;padding:20px;">Sin equipos.</td></tr>'; return; }
   tbody.innerHTML = equiposCache.map((e, i) => `
     <tr>
       <td style="color:var(--muted);font-family:'Bebas Neue',sans-serif;">${String(i+1).padStart(2,'0')}</td>
@@ -453,53 +442,49 @@ function renderEquiposTabla() {
       </div></td>
       <td style="color:rgba(245,245,240,0.6)">${e.capitan||'—'}</td>
       <td><span class="pill pill-g">Grupo ${e.grupo||'—'}</span></td>
-      <td style="color:var(--muted)">${(e.jugadores||[]).length} jugadores</td>
+      <td style="color:var(--muted)">${(e.jugadores||[]).length} jug.</td>
       <td><div style="display:flex;gap:6px;">
-        <button class="btn btn-outline" style="padding:6px 12px;font-size:10px;" onclick="editarEquipo('${e.id}')">Editar</button>
-        <button class="btn btn-red" style="padding:6px 12px;font-size:10px;" onclick="eliminarEquipo('${e.id}')">Eliminar</button>
+        <button class="btn btn-outline" style="padding:6px 12px;font-size:10px;" onclick="window.editarEquipo('${e.id}')">Editar</button>
+        <button class="btn btn-red" style="padding:6px 12px;font-size:10px;" onclick="window.eliminarEquipo('${e.id}')">Eliminar</button>
       </div></td>
     </tr>`).join('');
-}
+};
 
 window.guardarEquipo = async function() {
   const nombre = document.getElementById('eq-nombre').value.trim();
-  const capitan = document.getElementById('eq-capitan').value.trim();
-  if (!nombre) { toast('Ingresa el nombre del equipo', true); return; }
+  if (!nombre) { window.toast('Ingresa el nombre', true); return; }
   const id = document.getElementById('eq-id').value || nombre.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-  const jugadoresRaw = document.getElementById('eq-jugadores').value;
-  const jugadores = jugadoresRaw.split('\n').map(j=>j.trim()).filter(Boolean);
   let fotoUrl = document.getElementById('eq-foto-url').value;
-
-  // Upload foto si hay archivo nuevo
   const fileInput = document.getElementById('eq-foto');
+
   if (fileInput.files[0]) {
     try {
-      const file = fileInput.files[0];
       const storageRef = sRef(storage, `equipos/${id}_${Date.now()}`);
-      await uploadBytes(storageRef, file);
+      await uploadBytes(storageRef, fileInput.files[0]);
       fotoUrl = await getDownloadURL(storageRef);
-    } catch(e) { toast('Error subiendo foto: ' + e.message, true); return; }
+    } catch(e) { window.toast('Error foto: ' + e.message, true); return; }
   }
 
   const data = {
-    nombre, capitan,
+    nombre, capitan: document.getElementById('eq-capitan').value.trim(),
     grupo: document.getElementById('eq-grupo').value,
     color: document.getElementById('eq-color').value || '#333333',
     tel: document.getElementById('eq-tel').value,
-    jugadores, fotoUrl: fotoUrl || '',
+    jugadores: document.getElementById('eq-jugadores').value.split('\n').filter(Boolean),
+    fotoUrl: fotoUrl || '',
     updatedAt: new Date().toISOString()
   };
+
   try {
     await setDoc(doc(db, 'equipos', id), data, {merge: true});
-    toast('Equipo guardado');
-    limpiarFormEquipo();
-  } catch(e) { toast('Error: ' + e.message, true); }
+    window.toast('Equipo guardado');
+    window.limpiarFormEquipo();
+  } catch(e) { window.toast('Error: ' + e.message, true); }
 };
 
 window.limpiarFormEquipo = function() {
   ['eq-id','eq-nombre','eq-capitan','eq-color','eq-tel','eq-jugadores','eq-foto-url'].forEach(id => document.getElementById(id).value='');
   document.getElementById('eq-foto-preview').style.display='none';
-  document.getElementById('eq-grupo').value='A';
 };
 
 window.editarEquipo = function(id) {
@@ -509,241 +494,129 @@ window.editarEquipo = function(id) {
   document.getElementById('eq-nombre').value = e.nombre||'';
   document.getElementById('eq-capitan').value = e.capitan||'';
   document.getElementById('eq-grupo').value = e.grupo||'A';
-  document.getElementById('eq-color').value = e.color||'';
-  document.getElementById('eq-tel').value = e.tel||'';
+  document.getElementById('eq-color').value = e.color||'#333333';
   document.getElementById('eq-jugadores').value = (e.jugadores||[]).join('\n');
   document.getElementById('eq-foto-url').value = e.fotoUrl||'';
-  if (e.fotoUrl) { const img = document.getElementById('eq-foto-preview'); img.src=e.fotoUrl; img.style.display='block'; }
-  nav(document.querySelector('[data-page=equipos]'));
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.nav(document.querySelector('[data-page=equipos]'));
 };
 
 window.eliminarEquipo = async function(id) {
-  if (!confirm('¿Eliminar este equipo? Esta acción no se puede deshacer.')) return;
-  try { await deleteDoc(doc(db,'equipos',id)); toast('Equipo eliminado'); }
-  catch(e) { toast('Error: '+e.message, true); }
+  if (confirm('¿Eliminar?')) {
+    await deleteDoc(doc(db,'equipos',id));
+    window.toast('Eliminado');
+  }
 };
 
 window.previewFoto = function(input) {
-  if (!input.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = e => { const img=document.getElementById('eq-foto-preview'); img.src=e.target.result; img.style.display='block'; };
-  reader.readAsDataURL(input.files[0]);
+  if (input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { const img=document.getElementById('eq-foto-preview'); img.src=e.target.result; img.style.display='block'; };
+    reader.readAsDataURL(input.files[0]);
+  }
 };
 
-// ══════════════════════════════════════════════
-// FIXTURE
-// ══════════════════════════════════════════════
-async function cargarSelectEquipos() {
+// ── FIXTURE & RESULTADOS ──
+window.cargarSelectEquipos = function() {
   const opts = equiposCache.map(e => `<option value="${e.nombre}">${e.nombre}</option>`).join('');
   document.getElementById('f-local').innerHTML = '<option value="">— Local —</option>' + opts;
   document.getElementById('f-visita').innerHTML = '<option value="">— Visitante —</option>' + opts;
-}
+};
 
-function listenFixture() {
+window.listenFixture = function() {
   onSnapshot(collection(db,'partidos'), snap => {
-    let partidos = [];
-    snap.forEach(d => partidos.push({id:d.id,...d.data()}));
-    renderFixture(partidos);
+    let ps = []; snap.forEach(d => ps.push({id:d.id,...d.data()}));
+    window.renderFixture(ps);
   });
-}
+};
 
-function renderFixture(partidos) {
+window.renderFixture = function(partidos) {
   const container = document.getElementById('fixture-list');
   const fases = {};
   partidos.forEach(p => { if (!fases[p.fase]) fases[p.fase]=[]; fases[p.fase].push(p); });
-  if (!Object.keys(fases).length) { container.innerHTML='<div class="loading">Sin partidos. Agrega el primero arriba.</div>'; return; }
   container.innerHTML = Object.entries(fases).map(([fase, ps]) => `
     <div class="group-label">${fase}</div>
     ${ps.map(p => `
       <div class="match-card">
-        <div>
-          <div class="match-team">${p.local}</div>
-          <div class="match-meta">${p.fecha||''} · ${p.cancha||''}</div>
-        </div>
-        <div style="text-align:center">
-          <div style="color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:16px;">VS</div>
-          <span class="pill ${p.estado==='jugado'?'pill-g':p.estado==='en-juego'?'pill-o':'pill-r'}">${p.estado==='jugado'?'Jugado':p.estado==='en-juego'?'En juego':'Pendiente'}</span>
-        </div>
-        <div style="text-align:right">
-          <div class="match-team right">${p.visita}</div>
-          <div style="margin-top:6px;display:flex;gap:4px;justify-content:flex-end;">
-            <button class="btn btn-red" style="padding:5px 10px;font-size:9px;" onclick="eliminarPartido('${p.id}')">Eliminar</button>
-          </div>
-        </div>
+        <div class="match-team">${p.local} vs ${p.visita}</div>
+        <button class="btn btn-red" onclick="window.eliminarPartido('${p.id}')">X</button>
       </div>`).join('')}`).join('');
-}
+};
 
 window.guardarPartido = async function() {
   const local = document.getElementById('f-local').value;
   const visita = document.getElementById('f-visita').value;
-  if (!local || !visita) { toast('Selecciona ambos equipos', true); return; }
-  if (local === visita) { toast('Los equipos deben ser distintos', true); return; }
-  const data = {
-    local, visita,
-    fase: document.getElementById('f-fase').value,
-    fecha: document.getElementById('f-fecha').value,
-    cancha: document.getElementById('f-cancha').value,
-    estado: 'pendiente',
-    golesLocal: null, golesVisita: null,
-    createdAt: new Date().toISOString()
-  };
-  try {
-    await setDoc(doc(collection(db,'partidos')), data);
-    toast('Partido agregado');
-    document.getElementById('f-local').value='';
-    document.getElementById('f-visita').value='';
-    document.getElementById('f-fecha').value='';
-    document.getElementById('f-cancha').value='';
-  } catch(e) { toast('Error: '+e.message, true); }
+  if (!local || !visita) return window.toast('Elige equipos', true);
+  const data = { local, visita, fase: document.getElementById('f-fase').value, estado: 'pendiente' };
+  await setDoc(doc(collection(db,'partidos')), data);
+  window.toast('Partido creado');
 };
 
 window.eliminarPartido = async function(id) {
-  if (!confirm('¿Eliminar este partido?')) return;
-  try { await deleteDoc(doc(db,'partidos',id)); toast('Partido eliminado'); }
-  catch(e) { toast('Error: '+e.message, true); }
+  if (confirm('¿Eliminar partido?')) await deleteDoc(doc(db,'partidos',id));
 };
 
-// ══════════════════════════════════════════════
-// RESULTADOS
-// ══════════════════════════════════════════════
 let partidosCache = [];
-
-function listenResultados() {
+window.listenResultados = function() {
   onSnapshot(collection(db,'partidos'), snap => {
     partidosCache = [];
     snap.forEach(d => partidosCache.push({id:d.id,...d.data()}));
-    renderResultados();
-    renderFixture(partidosCache);
+    window.renderResultados();
   });
-}
+};
 
-function renderResultados() {
+window.renderResultados = function() {
   const container = document.getElementById('resultados-list');
-  const fases = {};
-  partidosCache.forEach(p => { if(!fases[p.fase])fases[p.fase]=[]; fases[p.fase].push(p); });
-  if (!Object.keys(fases).length) { container.innerHTML='<div class="loading">Sin partidos en el fixture todavía.</div>'; return; }
-  container.innerHTML = Object.entries(fases).map(([fase, ps]) => `
-    <div class="group-label">${fase}</div>
-    ${ps.map(p => `
-      <div class="match-card">
-        <div>
-          <div class="match-team">${p.local}</div>
-          <div class="match-meta">${p.fecha||''} · ${p.cancha||''}</div>
-        </div>
-        <div style="text-align:center">
-          <div class="match-score" style="justify-content:center">
-            <input class="score-in" type="number" min="0" max="99" id="gl-${p.id}" value="${p.golesLocal??''}" placeholder="0">
-            <span class="score-sep">—</span>
-            <input class="score-in" type="number" min="0" max="99" id="gv-${p.id}" value="${p.golesVisita??''}" placeholder="0">
-          </div>
-          <div style="margin-top:8px;display:flex;gap:6px;justify-content:center;">
-            <button class="btn btn-lime" style="padding:7px 14px;font-size:10px;" onclick="guardarResultado('${p.id}')">
-              ${p.estado==='jugado'?'✓ Actualizar':'Guardar'}
-            </button>
-            ${p.estado!=='en-juego'?`<button class="btn btn-outline" style="padding:7px 12px;font-size:10px;" onclick="marcarEnJuego('${p.id}')">▶ En juego</button>`:''}
-          </div>
-          <span class="pill ${p.estado==='jugado'?'pill-g':p.estado==='en-juego'?'pill-o':'pill-r'}" style="margin-top:6px;display:inline-block;">
-            ${p.estado==='jugado'?'Jugado':p.estado==='en-juego'?'⚡ En juego':'Pendiente'}
-          </span>
-        </div>
-        <div class="match-team right">${p.visita}</div>
-      </div>`).join('')}`).join('');
-}
+  container.innerHTML = partidosCache.map(p => `
+    <div class="match-card">
+      <span>${p.local}</span>
+      <input type="number" id="gl-${p.id}" value="${p.golesLocal??''}" style="width:40px">
+      <span> - </span>
+      <input type="number" id="gv-${p.id}" value="${p.golesVisita??''}" style="width:40px">
+      <span>${p.visita}</span>
+      <button onclick="window.guardarResultado('${p.id}')">Guardar</button>
+    </div>`).join('');
+};
 
 window.guardarResultado = async function(id) {
-  const gl = document.getElementById('gl-'+id)?.value;
-  const gv = document.getElementById('gv-'+id)?.value;
-  if (gl==='' || gv==='') { toast('Ingresa ambos marcadores', true); return; }
-  try {
-    await updateDoc(doc(db,'partidos',id), {
-      golesLocal: parseInt(gl), golesVisita: parseInt(gv),
-      estado: 'jugado', updatedAt: new Date().toISOString()
-    });
-    toast('Resultado guardado ✓');
-  } catch(e) { toast('Error: '+e.message, true); }
+  const gl = document.getElementById('gl-'+id).value;
+  const gv = document.getElementById('gv-'+id).value;
+  await updateDoc(doc(db,'partidos',id), { golesLocal: parseInt(gl), golesVisita: parseInt(gv), estado: 'jugado' });
+  window.toast('Resultado guardado');
 };
 
-window.marcarEnJuego = async function(id) {
-  try { await updateDoc(doc(db,'partidos',id), {estado:'en-juego'}); toast('Partido marcado en juego'); }
-  catch(e) { toast('Error: '+e.message, true); }
-};
-
-// ══════════════════════════════════════════════
-// TABLA
-// ══════════════════════════════════════════════
-function listenTabla() {
+// ── TABLA ──
+window.listenTabla = function() {
   onSnapshot(collection(db,'tabla'), snap => {
-    let tabla = [];
-    snap.forEach(d => tabla.push({id:d.id,...d.data()}));
-    renderTablaAdmin(tabla);
+    let tabla = []; snap.forEach(d => tabla.push({id:d.id,...d.data()}));
+    window.renderTablaAdmin(tabla);
   });
-}
+};
 
-function renderTablaAdmin(tabla) {
+window.renderTablaAdmin = function(tabla) {
   const container = document.getElementById('tabla-list');
-  if (!tabla.length) { container.innerHTML='<div class="loading">Sin datos. Agrega partidos y resultados primero.</div>'; return; }
-  const grupos = {};
-  tabla.forEach(t => { if(!grupos[t.grupo])grupos[t.grupo]=[]; grupos[t.grupo].push(t); });
-  Object.values(grupos).forEach(g => g.sort((a,b) => b.pts-a.pts||(b.gf-b.gc)-(a.gf-a.gc)));
-  container.innerHTML = Object.entries(grupos).map(([g, equipos]) => `
-    <div class="group-label">Grupo ${g}</div>
-    <div class="form-section" style="padding:0;overflow:hidden;">
-    <table class="data-table">
-      <thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>Pts</th></tr></thead>
-      <tbody>${equipos.map((e,i)=>`
-        <tr>
-          <td style="font-family:'Bebas Neue',sans-serif;color:${i<2?'var(--lime)':'var(--muted)'};">${i+1}</td>
-          <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;">${e.nombre}</td>
-          <td>${e.pj||0}</td><td>${e.g||0}</td><td>${e.e||0}</td><td>${e.p||0}</td>
-          <td>${e.gf||0}</td><td>${e.gc||0}</td>
-          <td style="font-family:'Bebas Neue',sans-serif;color:var(--lime);font-size:18px;">${e.pts||0}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table></div>`).join('');
-}
+  container.innerHTML = `<table class="data-table">
+    <thead><tr><th>Equipo</th><th>Pts</th><th>PJ</th></tr></thead>
+    <tbody>${tabla.map(e => `<tr><td>${e.nombre}</td><td>${e.pts}</td><td>${e.pj}</td></tr>`).join('')}</tbody>
+  </table>`;
+};
 
 window.recalcularTabla = async function() {
-  // Lee todos los partidos jugados y recalcula la tabla
+  window.toast('Recalculando...');
   const snap = await getDocs(collection(db,'partidos'));
   const stats = {};
-
   snap.forEach(d => {
-    const p = d.data();
-    if (p.estado !== 'jugado') return;
-    const gl = parseInt(p.golesLocal||0), gv = parseInt(p.golesVisita||0);
-
-    // Buscar equipos en cache para saber su grupo
-    const eqLocal = equiposCache.find(e => e.nombre === p.local);
-    const eqVisita = equiposCache.find(e => e.nombre === p.visita);
-
-    [p.local, p.visita].forEach((nombre, idx) => {
-      if (!stats[nombre]) {
-        const eq = idx===0 ? eqLocal : eqVisita;
-        stats[nombre] = {nombre, grupo: eq?.grupo||'A', pj:0,g:0,e:0,p:0,gf:0,gc:0,pts:0};
-      }
-    });
-
+    const p = d.data(); if (p.estado !== 'jugado') return;
+    const gl = parseInt(p.golesLocal), gv = parseInt(p.golesVisita);
+    [p.local, p.visita].forEach(n => { if(!stats[n]) stats[n]={nombre:n,pts:0,pj:0,gf:0,gc:0}; });
     stats[p.local].pj++; stats[p.visita].pj++;
-    stats[p.local].gf += gl; stats[p.local].gc += gv;
-    stats[p.visita].gf += gv; stats[p.visita].gc += gl;
-
-    if (gl > gv) { stats[p.local].g++; stats[p.local].pts+=3; stats[p.visita].p++; }
-    else if (gl < gv) { stats[p.visita].g++; stats[p.visita].pts+=3; stats[p.local].p++; }
-    else { stats[p.local].e++; stats[p.local].pts+=1; stats[p.visita].e++; stats[p.visita].pts+=1; }
+    if(gl>gv) stats[p.local].pts+=3; else if(gv>gl) stats[p.visita].pts+=3; else { stats[p.local].pts++; stats[p.visita].pts++; }
   });
-
-  try {
-    for (const [nombre, data] of Object.entries(stats)) {
-      const id = nombre.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-      await setDoc(doc(db,'tabla',id), data, {merge:true});
-    }
-    toast('Tabla recalculada ✓');
-  } catch(e) { toast('Error: '+e.message, true); }
+  for (const [nombre, data] of Object.entries(stats)) {
+    const id = nombre.toLowerCase().replace(/\s+/g,'-');
+    await setDoc(doc(db,'tabla',id), data, {merge:true});
+  }
+  window.toast('Tabla al día');
 };
 
-// Init on load
 document.getElementById('pass-in').focus();
 </script>
-</body>
-</html>
