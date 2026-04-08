@@ -17,7 +17,6 @@
 html{scroll-behavior:smooth;}
 body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;overflow-x:hidden;}
 
-/* ANIMACIONES */
 @keyframes fadeUp{from{opacity:0;transform:translateY(32px);}to{opacity:1;transform:translateY(0);}}
 @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
@@ -39,8 +38,6 @@ nav{
   border-bottom:1px solid rgba(200,241,53,0.07);
 }
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.nav-logo-text{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--lime);}
-.nav-logo-text span{color:var(--white);}
 .nav-links{display:flex;gap:28px;list-style:none;}
 .nav-links a{
   font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;
@@ -50,7 +47,6 @@ nav{
 .nav-links a:hover{color:var(--lime);}
 .nav-right{display:flex;align-items:center;gap:14px;}
 .nav-phone{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:var(--muted);display:flex;align-items:center;gap:6px;}
-.nav-phone::before{content:'📱';font-size:12px;}
 .btn-nav{
   font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;
   letter-spacing:2px;text-transform:uppercase;padding:10px 22px;
@@ -58,69 +54,48 @@ nav{
   clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);
   transition:all .2s;text-decoration:none;
 }
-.btn-nav:hover{background:var(--white);}
-.burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px;}
-.burger span{width:22px;height:2px;background:var(--white);display:block;transition:.3s;}
 
 /* HERO */
-.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding:0;position:relative;overflow:hidden;padding-top:69px;}
-.hero-left{display:flex;flex-direction:column;justify-content:center;padding:80px 52px 80px;position:relative;z-index:2;}
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:69px;}
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding:80px 52px;z-index:2;}
 .hero-right{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.hero-field-bg{position:absolute;inset:0;}
-.hero-field-bg svg{width:100%;height:100%;opacity:.07;}
-.hero-logo-big{position:relative;z-index:2;animation:float 4s ease-in-out infinite;}
-.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--lime);margin-bottom:20px;display:flex;align-items:center;gap:12px;animation:fadeUp .6s ease both;}
-.hero-eyebrow::before{content:'';width:32px;height:2px;background:var(--lime);}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,8vw,110px);line-height:.88;letter-spacing:-1px;margin-bottom:24px;animation:fadeUp .7s .1s ease both;}
+.hero-field-bg{position:absolute;inset:0;opacity:.07;}
+.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--lime);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,8vw,110px);line-height:.88;margin-bottom:24px;}
 .hero-title .lime{color:var(--lime);}
 .hero-title .dim{-webkit-text-stroke:1px rgba(245,245,240,0.18);color:transparent;}
-.hero-sub{font-size:16px;color:rgba(245,245,240,0.55);max-width:440px;line-height:1.75;margin-bottom:36px;animation:fadeUp .7s .2s ease both;}
-.hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;animation:fadeUp .7s .25s ease both;}
-.htag{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;background:rgba(200,241,53,0.08);color:var(--lime);border:1px solid rgba(200,241,53,0.2);}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;animation:fadeUp .7s .3s ease both;}
-.btn-primary{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:15px 32px;background:var(--lime);color:var(--black);border:none;cursor:pointer;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
-.btn-primary:hover{background:var(--white);transform:translateY(-2px);}
-.btn-outline{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:15px 32px;background:transparent;color:var(--white);border:1px solid rgba(245,245,240,0.2);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);}
-.btn-outline:hover{border-color:var(--lime);color:var(--lime);}
-.hero-stats-strip{margin-top:52px;display:flex;gap:0;animation:fadeUp .7s .4s ease both;border-top:1px solid rgba(255,255,255,0.06);padding-top:28px;}
-.hstat{flex:1;padding-right:24px;border-right:1px solid rgba(255,255,255,0.06);}
-.hstat:last-child{border:none;padding-right:0;padding-left:24px;}
-.hstat:not(:first-child):not(:last-child){padding:0 24px;}
-.hstat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--lime);line-height:1;}
-.hstat-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.hero-sub{font-size:16px;color:rgba(245,245,240,0.55);max-width:440px;line-height:1.75;margin-bottom:36px;}
+.btn-primary{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:15px 32px;background:var(--lime);color:var(--black);border:none;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);text-decoration:none;}
 
 /* TICKER */
 .ticker{background:var(--lime);padding:12px 0;overflow:hidden;}
 .ttrack{display:flex;animation:ticker 24s linear infinite;white-space:nowrap;}
-.titem{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:var(--black);padding:0 24px;flex-shrink:0;}
-.titem::after{content:' · ';}
+.titem{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:var(--black);padding:0 24px;}
 
-/* SECTION BASE */
-.section{padding:84px 52px;}
-.section.alt{background:var(--dark);}
-.eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--lime);margin-bottom:10px;}
-.sec-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5.5vw,72px);line-height:.92;letter-spacing:-1px;margin-bottom:16px;}
-.sec-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:52px;gap:20px;}
-
-/* TEAMS GRID (Importante para Firebase) */
+/* TEAMS GRID */
 .teams-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:52px;}
-.team-card{background:var(--card);padding:28px 24px;border-top:2px solid transparent;transition:all .3s;cursor:default;text-align:center;}
+.team-card{background:var(--card);padding:28px 24px;border-top:2px solid transparent;transition:all .3s;text-align:center;}
 .team-card:hover{background:var(--surface);border-top-color:var(--lime);}
 .team-photo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--dimmed);margin:0 auto 14px;display:block;}
-.team-avatar{width:80px;height:80px;border-radius:50%;background: var(--gray);color:var(--dimmed);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:28px;margin:0 auto 14px;border:2px dashed var(--dimmed);}
-.team-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:4px;line-height:1.1;}
-.team-cap{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-.team-grupo{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;background:rgba(200,241,53,0.08);color:var(--lime);border:1px solid rgba(200,241,53,0.15);display:inline-block;}
+.team-avatar{width:80px;height:80px;border-radius:50%;background:var(--gray);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:28px;margin:0 auto 14px;}
+.team-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:4px;}
+.team-cap{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);text-transform:uppercase;}
 
-/* RESPONSIVE */
-@media(max-width:1024px){
-  .hero{grid-template-columns:1fr;}.hero-right{display:none;}
-  .teams-grid{grid-template-columns:repeat(3,1fr);}
-}
+/* SECTION */
+.section{padding:84px 52px;}
+.sec-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5.5vw,72px);line-height:.92;margin-bottom:16px;}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--lime);text-transform:uppercase;}
+
+/* FAQ */
+.faq-i{background:var(--card);margin-bottom:2px;}
+.faq-q{padding:22px 28px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;display:flex;justify-content:space-between;text-transform:uppercase;}
+.faq-a{padding:0 28px;max-height:0;overflow:hidden;transition:all .4s;font-size:14px;color:var(--muted);}
+.faq-i.open .faq-a{max-height:200px;padding-bottom:20px;}
+
 @media(max-width:768px){
-  nav{padding:0 20px;}.nav-links,.nav-phone,.btn-nav{display:none;}.burger{display:flex;}
-  .section{padding:56px 20px;}
   .teams-grid{grid-template-columns:repeat(2,1fr);}
+  .hero{grid-template-columns:1fr;}
+  .hero-right{display:none;}
 }
 </style>
 </head>
@@ -128,24 +103,18 @@ nav{
 
 <div class="scroll-bar"><div class="scroll-bar-fill" id="prog"></div></div>
 
-<nav id="nav">
+<nav>
   <a href="#" class="nav-logo">
     <svg width="110" height="42" viewBox="0 0 260 100">
-      <defs><clipPath id="nK"><polygon points="8,4 32,4 32,38 64,4 92,4 56,50 92,96 64,96 32,62 32,96 8,96"/></clipPath></defs>
       <polygon points="8,4 32,4 32,38 64,4 92,4 56,50 92,96 64,96 32,62 32,96 8,96" fill="#C8F135"/>
-      <g clip-path="url(#nK)" stroke="#0A0A0A" stroke-width="1.5" fill="none">
-        <rect x="3" y="10" width="90" height="80"/><line x1="3" y1="50" x2="93" y2="50"/>
-        <circle cx="48" cy="50" r="14"/><circle cx="48" cy="50" r="2.5" fill="#0A0A0A" stroke="none"/>
-        <rect x="3" y="32" width="16" height="36"/><rect x="77" y="32" width="16" height="36"/>
-      </g>
-      <text x="106" y="46" font-family="Bebas Neue,sans-serif" font-size="54" fill="#F5F5F0" dominant-baseline="central" letter-spacing="4">OPA</text>
+      <text x="106" y="55" font-family="Bebas Neue" font-size="54" fill="#F5F5F0">OPA</text>
     </svg>
   </a>
   <ul class="nav-links">
     <li><a href="#torneos">Torneos</a></li>
     <li><a href="#equipos">Equipos</a></li>
     <li><a href="#fixture">Fixture</a></li>
-    <li><a href="#ranking">Ranking</a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
   <div class="nav-right">
     <div class="nav-phone">099 285 2415</div>
@@ -157,48 +126,59 @@ nav{
   <div class="hero-left">
     <div class="hero-eyebrow">⚽ Cuenca · Temporada 2026</div>
     <h1 class="hero-title">EL TORNEO<br>QUE <span class="lime">TUS PANAS</span><br><span class="dim">ESTABAN</span><br>ESPERANDO</h1>
-    <p class="hero-sub">Organiza torneos de fútbol con tus amigos, tu empresa o tu grupo. KOPA se encarga de todo — fixture, marcadores y la emoción de competir en serio.</p>
-    <div class="hero-actions">
-      <a href="#torneos" class="btn-primary">Ver torneos activos →</a>
-      <a href="#equipos" class="btn-outline">Ver equipos inscritos</a>
+    <p class="hero-sub">Organiza torneos en Cuenca con fixture profesional, fotos premium y resultados en vivo.</p>
+    <a href="#torneos" class="btn-primary">Ver torneos activos →</a>
+    <div class="hero-stats-strip" style="display:flex; gap:40px; margin-top:40px;">
+      <div><div id="count-equipos" style="font-size:32px; font-family:'Bebas Neue'; color:var(--lime);">0</div><div style="font-size:10px; text-transform:uppercase; color:var(--muted);">Equipos</div></div>
+      <div><div style="font-size:32px; font-family:'Bebas Neue'; color:var(--lime);">1</div><div style="font-size:10px; text-transform:uppercase; color:var(--muted);">Torneo 2026</div></div>
     </div>
-    <div class="hero-stats-strip">
-      <div class="hstat"><div class="hstat-num">1</div><div class="hstat-label">Torneos activos</div></div>
-      <div class="hstat"><div class="hstat-num" id="stat-equipos">0</div><div class="hstat-label">Equipos confirmados</div></div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-field-bg">
+        <svg viewBox="0 0 700 900" fill="none" stroke="#C8F135" stroke-width="2"><rect x="50" y="50" width="600" height="800"/><circle cx="350" cy="450" r="100"/><line x1="50" y1="450" x2="650" y2="450"/></svg>
     </div>
   </div>
 </section>
 
 <div class="ticker">
   <div class="ttrack">
-    <div class="titem">KOPA Relámpago #01 — Inscripciones abiertas</div>
-    <div class="titem">Fútbol 6 · Cuenca · Abril 2026</div>
+    <div class="titem">KOPA Relámpago #01 — Abril 2026</div>
+    <div class="titem">Fútbol 6 · Inscripciones abiertas</div>
     <div class="titem">Resultados en tiempo real</div>
-    <div class="titem">KOPA Liga · Junio 2026</div>
-    <div class="titem">Inscribe a tu equipo</div>
-    <div class="titem">KOPA Relámpago #01 — Inscripciones abiertas</div>
-    <div class="titem">Fútbol 6 · Cuenca · Abril 2026</div>
+    <div class="titem">KOPA Relámpago #01 — Abril 2026</div>
   </div>
 </div>
 
 <section class="section" id="equipos">
-  <div class="sec-header">
-    <div>
-      <div class="eyebrow">Inscritos oficialmente</div>
-      <h2 class="sec-h">EQUIPOS<br>CONFIRMADOS</h2>
+  <div class="eyebrow">Confirmados</div>
+  <h2 class="sec-h">EQUIPOS<br>INSCRITOS 2026</h2>
+  <div id="teams-container" class="teams-grid">
+    </div>
+</section>
+
+<section class="section" id="faq" style="background:var(--dark);">
+  <div class="eyebrow">Dudas comunes</div>
+  <h2 class="sec-h">PREGUNTAS<br>FRECUENTES</h2>
+  <div class="faq">
+    <div class="faq-i" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Cómo inscribo a mi equipo?<span>+</span></div>
+      <div class="faq-a">Puedes hacerlo vía WhatsApp al 099 285 2415 o haciendo clic en el botón de inscripción arriba.</div>
+    </div>
+    <div class="faq-i" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Dónde se juegan los partidos?<span>+</span></div>
+      <div class="faq-a">Todas las sedes son en Cuenca, en las mejores canchas de césped sintético de la ciudad.</div>
     </div>
   </div>
-  
-  <div id="teams-container" class="teams-grid">
-      <p style="color:var(--muted)">Cargando equipos...</p>
-  </div>
 </section>
+
+<footer style="padding:40px 52px; border-top:1px solid var(--gray); text-align:center;">
+  <p style="font-size:12px; color:var(--muted);">© 2026 KOPA FC — PREMIUM TOURNAMENTS</p>
+</footer>
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
   import { getFirestore, collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-  // Usa tu configuración aquí
   const firebaseConfig = {
     apiKey: "AIzaSyDf4leOoPo_JOPVEEKxYnTMIcH6dlg-54I",
     authDomain: "kopa-cuenca.firebaseapp.com",
@@ -212,48 +192,35 @@ nav{
   const db = getFirestore(app);
 
   const container = document.getElementById('teams-container');
-  const statEquipos = document.getElementById('stat-equipos');
+  const counter = document.getElementById('count-equipos');
 
-  // ESCUCHAR EQUIPOS EN TIEMPO REAL
   onSnapshot(collection(db, 'equipos'), (snapshot) => {
-    if (snapshot.empty) {
-      container.innerHTML = '<p style="color:var(--muted)">Aún no hay equipos inscritos.</p>';
-      if(statEquipos) statEquipos.innerText = '0';
-      return;
-    }
-
     container.innerHTML = '';
-    if(statEquipos) statEquipos.innerText = snapshot.size;
-
+    counter.innerText = snapshot.size;
+    
     snapshot.forEach((doc) => {
       const team = doc.data();
       const card = document.createElement('div');
       card.className = 'team-card';
       
-      // Lógica para mostrar foto (team.fotoUrl)
-      // Si no hay foto, usamos tu estilo team-avatar como respaldo premium
-      const logoHTML = team.fotoUrl 
-        ? `<img src="${team.fotoUrl}" class="team-photo" alt="Logo ${team.nombre}">` 
-        : `<div class="team-avatar">${team.nombre[0].toUpperCase()}</div>`;
+      // Si team.fotoUrl existe, se muestra. Si no, inicial.
+      const imgHTML = team.fotoUrl 
+        ? `<img src="${team.fotoUrl}" class="team-photo">` 
+        : `<div class="team-avatar">${team.nombre[0]}</div>`;
 
       card.innerHTML = `
-        ${logoHTML}
+        ${imgHTML}
         <div class="team-name">${team.nombre}</div>
         <div class="team-cap">Cap. ${team.capitan || '—'}</div>
-        <div class="team-grupo">GRUPO ${team.grupo || 'A'}</div>
       `;
       container.appendChild(card);
     });
   });
 
-  // Animación del Scroll Bar
-  window.onscroll = function() {
-    let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-    let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    let scrolled = (winScroll / height) * 100;
+  window.onscroll = () => {
+    let scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
     document.getElementById("prog").style.width = scrolled + "%";
   };
 </script>
-
 </body>
 </html>
